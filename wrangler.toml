@@ -1,0 +1,17 @@
+name = "hashboard_cron"
+main = "src/index.mjs"
+compatibility_date = "2024-04-10"
+node_compat = true
+
+[triggers]
+crons = [ "*/10 * * * *" ]
+
+[vars]
+API_KEY="developer.apikey.010aeaefb7c5054b0356ddeeb9d1ed09"
+ETH_RPC_KEY="d97ee4a919b547d88ee5982aee01d6b8"
+COIN_KEY="a510df1b-d34e-4d29-867f-44c7b3701e1e"
+DEX_KEY="ogecwT0tAzgi5Dd7vrHx0qEtQgva4emj"
+QUICKNODE_KEY="824a07fbc15d8f1ebe1defe945d605020fd243d1"
+ALCHEMY_KEY="jC4KyUTZBgQJIuG0D5kUAJKUfsdzAL-D"
+MORALIS_KEY="eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJub25jZSI6ImI2ZmNjYjRiLWJmYWItNDQ5YS05MThkLTc5YzU5YzA1NDZlYiIsIm9yZ0lkIjoiMzc1NzM3IiwidXNlcklkIjoiMzg2MTE4IiwidHlwZUlkIjoiYTYwMTQzOTMtZDU0Ny00NTUxLWFlOTEtMjM1NzIyZmQ1MGI5IiwidHlwZSI6IlBST0pFQ1QiLCJpYXQiOjE3MDcwNjI4NjUsImV4cCI6NDg2MjgyMjg2NX0.HNKXRoQ4BLTd2Qqn2XM76-YleX2vtzaXVC-q9ebvKH4"
+PSQL_CONNECTION="postgresql://hashboard-middleware_owner:sbMNzLJ63qYQ@ep-summer-fog-a2eo4avs.eu-central-1.aws.neon.tech/hashboard-middleware?sslmode=require"
