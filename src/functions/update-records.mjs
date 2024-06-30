@@ -10,10 +10,11 @@ import { xpubs } from "../data/btc.mjs"
 let timestamp = Date.now()
 
 const exchanges = async function (env) {
+  console.log("ZH and ZHD")
   const client = neon(env.PSQL_CONNECTION, { fullResults: true });
   const coincapIOAPI = `https://api.coincap.io/v2/assets?ids=bitcoin,tether,ethereum`
-  const dextoolsAPIZH = 'https://open-api.dextools.io/free/v2/token/ether/0x2c0e15190acb858bf74447928cbd8fb9709dcb19/price'
   const moralisEndpoint = 'https://deep-index.moralis.io/api/v2.2/erc20/0x2c0e15190acb858bf74447928cbd8fb9709dcb19/price?chain=eth&include=percent_change&exchange=uniswapv3'
+  const ZHDMoralis = 'https://deep-index.moralis.io/api/v2.2/erc20/0xb630D7388e3466Af4952B6E5D8Db63D828140e5d/price?chain=eth&include=percent_change&exchange=uniswapv3'
   const currencies_q = client`SELECT name FROM currencues_available where disabled=false`
   const [currencies_result] = await client.transaction([currencies_q], { isolationLevel: 'RepeatableRead', readOnly: true, })
 
@@ -40,9 +41,32 @@ const exchanges = async function (env) {
       let price = Number(moralisResp.nativePrice.value) / Math.pow(10, moralisResp.nativePrice.decimals)
       preparedStatements.push(client(`insert into coin_price_history (id, usd, data, modified) values($1,$2,$3,$4)`, [moralisResp.tokenSymbol, price, moralisResp, timestamp]))
       jsonb_obj[moralisResp.tokenSymbol] = { id: "zettahash token", name: "Zettahash Token", symbol: moralisResp.tokenSymbol, priceUsd: price }
+    } else {
+      if (moralisResp.message) {
+        preparedStatements.push(client(`insert into coin_price_history (id, usd, data, modified) values($1,$2,$3,$4)`, ['ZH', '0', moralisResp, timestamp]))
+
+      }
     }
   } catch (e) {
-    console.log("moralis Fetch error: ", e)
+    console.log("moralis Fetch ZH error: ", e)
+  }
+  // FETCH PRICE FOR ZHD
+  try {
+    const moralisZHD = await fetch(ZHDMoralis, { method: 'GET', headers: { 'X-API-Key': env.MORALIS_KEY } })
+    let moralisRespZHD = await moralisZHD.json()
+    console.log(moralisRespZHD)
+    if (moralisRespZHD.nativePrice) {
+      let price = Number(moralisRespZHD.nativePrice.value) / Math.pow(10, moralisRespZHD.nativePrice.decimals)
+      preparedStatements.push(client(`insert into coin_price_history (id, usd, data, modified) values($1,$2,$3,$4)`, [moralisRespZHD.tokenSymbol, price, moralisRespZHD, timestamp]))
+      jsonb_obj[moralisRespZHD.tokenSymbol] = { id: "zettahash dao token", name: "Zettahash DAO Token", symbol: moralisRespZHD.tokenSymbol, priceUsd: price }
+    } else {
+      if (moralisRespZHD.message) {
+        preparedStatements.push(client(`insert into coin_price_history (id, usd, data, modified) values($1,$2,$3,$4)`, ['ZHD', '0', moralisRespZHD, timestamp]))
+
+      }
+    }
+  } catch (e) {
+    console.log("moralis Fetch ZHD error: ", e)
   }
 
   preparedStatements.push(client(`INSERT INTO payload_cache (key, value, modified) values($1, $2, $3) ON CONFLICT (key) DO UPDATE SET value=$2, modified=$3`, ['exr', jsonb_obj, timestamp]))
