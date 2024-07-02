@@ -1,6 +1,8 @@
 
 # Zettahash Cron
 
+![badge](https://img.shields.io/badge/Current_Deployment_Environment-Couudflare-orange)
+
 Welcome to the Zettahash Cron repository. This repository contains a set of scripts that run on a schedule to support backend data operations for Zettahash applications.
 
 ## Contents
